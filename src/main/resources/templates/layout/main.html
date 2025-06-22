@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} ? ${title} + ' - Henuka Imitations' : 'Henuka Imitations'">Henuka Imitations</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        /* Chatbot Styles */
+        .chatbot-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .chatbot-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #1a1a1a;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .chatbot-button:hover {
+            transform: scale(1.1);
+        }
+        
+        .chatbot-window {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: none;
+            flex-direction: column;
+        }
+        
+        .chatbot-header {
+            padding: 15px;
+            background: #1a1a1a;
+            color: white;
+            border-radius: 10px 10px 0 0;
+            font-weight: 600;
+        }
+        
+        .chatbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        
+        .chatbot-input {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .message {
+            margin-bottom: 10px;
+            max-width: 80%;
+        }
+        
+        .user-message {
+            margin-left: auto;
+            background: #1a1a1a;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 15px 15px 0 15px;
+        }
+        
+        .bot-message {
+            background: #f3f4f6;
+            padding: 10px 15px;
+            border-radius: 15px 15px 15px 0;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen bg-white">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <a href="/" class="text-2xl font-bold text-gray-900">
+                    Henuka Imitations
+                </a>
+                
+                <!-- Search Bar -->
+                <div class="hidden md:flex flex-1 max-w-md mx-6">
+                    <form action="/products" method="GET" class="w-full">
+                        <input type="text" 
+                               name="search" 
+                               placeholder="Search products..." 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black">
+                    </form>
+                </div>
+                
+                <!-- Navigation Icons -->
+                <div class="flex items-center space-x-6">
+                    <a href="/cart" class="text-gray-700 hover:text-black relative">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span th:if="${cartItemCount > 0}" 
+                              th:text="${cartItemCount}"
+                              class="absolute -top-2 -right-2 bg-black text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                        </span>
+                    </a>
+                    <button id="mobileMenuButton" class="md:hidden text-gray-700 hover:text-black">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Main Navigation -->
+            <nav class="hidden md:flex mt-4 space-x-8">
+                <a href="/" class="text-gray-700 hover:text-black">Home</a>
+                <a href="/products" class="text-gray-700 hover:text-black">Shop</a>
+                <a href="/about" class="text-gray-700 hover:text-black">About</a>
+                <a href="/contact" class="text-gray-700 hover:text-black">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden md:hidden bg-white shadow-lg absolute top-16 left-0 right-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <form action="/products" method="GET" class="mb-4">
+                <input type="text" 
+                       name="search" 
+                       placeholder="Search products..." 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black">
+            </form>
+            <div class="flex flex-col space-y-4">
+                <a href="/" class="text-gray-700 hover:text-black">Home</a>
+                <a href="/products" class="text-gray-700 hover:text-black">Shop</a>
+                <a href="/about" class="text-gray-700 hover:text-black">About</a>
+                <a href="/contact" class="text-gray-700 hover:text-black">Contact</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div th:if="${message}" class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
+            <p th:text="${message}"></p>
+        </div>
+        <div th:if="${error}" class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+            <p th:text="${error}"></p>
+        </div>
+        
+        <!-- Content from child templates -->
+        <div th:replace="${content}">
+            <!-- Content will be inserted here -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Henuka Imitations</h3>
+                    <p class="text-gray-600">Premium quality imitation jewelry at affordable prices.</p>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/products" class="text-gray-600 hover:text-black">Shop</a></li>
+                        <li><a href="/about" class="text-gray-600 hover:text-black">About Us</a></li>
+                        <li><a href="/contact" class="text-gray-600 hover:text-black">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Customer Service -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/shipping" class="text-gray-600 hover:text-black">Shipping Info</a></li>
+                        <li><a href="/returns" class="text-gray-600 hover:text-black">Returns</a></li>
+                        <li><a href="/faq" class="text-gray-600 hover:text-black">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Newsletter -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Stay Updated</h3>
+                    <form class="space-y-4">
+                        <input type="email" 
+                               placeholder="Enter your email" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black">
+                        <button type="submit" 
+                                class="w-full bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition-colors">
+                            Subscribe
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Bottom Footer -->
+            <div class="mt-8 pt-8 border-t border-gray-200">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-600">&copy; 2024 Henuka Imitations. All rights reserved.</p>
+                    <div class="flex space-x-4 mt-4 md:mt-0">
+                        <a href="#" class="text-gray-600 hover:text-black"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-600 hover:text-black"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-600 hover:text-black"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot Widget -->
+    <div class="chatbot-widget">
+        <div class="chatbot-button" id="chatbotButton">
+            <i class="fas fa-comments text-2xl"></i>
+        </div>
+        
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">
+                <div class="flex justify-between items-center">
+                    <span>Chat with us</span>
+                    <button id="closeChatbot" class="text-white hover:text-gray-300">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="chatbot-messages" id="chatMessages">
+                <!-- Messages will be inserted here -->
+            </div>
+            
+            <div class="chatbot-input">
+                <input type="text" 
+                       id="chatInput" 
+                       placeholder="Type your message..." 
+                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black">
+                <button id="sendMessage" 
+                        class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition-colors">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script th:inline="javascript">
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Chatbot Functionality
+        const chatbotButton = document.getElementById('chatbotButton');
+        const chatbotWindow = document.getElementById('chatbotWindow');
+        const closeChatbot = document.getElementById('closeChatbot');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendMessage = document.getElementById('sendMessage');
+
+        chatbotButton.addEventListener('click', () => {
+            chatbotWindow.style.display = 'flex';
+            if (chatMessages.children.length === 0) {
+                addBotMessage("Hello! How can I help you today?");
+                addSuggestedQueries();
+            }
+        });
+
+        closeChatbot.addEventListener('click', () => {
+            chatbotWindow.style.display = 'none';
+        });
+
+        function addUserMessage(message) {
+            const div = document.createElement('div');
+            div.className = 'message user-message';
+            div.textContent = message;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addBotMessage(message) {
+            const div = document.createElement('div');
+            div.className = 'message bot-message';
+            div.textContent = message;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addSuggestedQueries() {
+            const queries = [
+                "Tell me about shipping",
+                "What's your return policy?",
+                "How can I track my order?",
+                "What payment methods do you accept?"
+            ];
+            
+            const div = document.createElement('div');
+            div.className = 'message bot-message';
+            div.innerHTML = 'You can ask me about:<br>' + 
+                queries.map(q => `<button class="text-left text-sm text-blue-600 hover:underline block mt-1">${q}</button>`).join('');
+            
+            div.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const query = btn.textContent;
+                    addUserMessage(query);
+                    sendMessage(query);
+                });
+            });
+            
+            chatMessages.appendChild(div);
+        }
+
+        async function sendMessage(message) {
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message })
+                });
+                
+                const data = await response.json();
+                addBotMessage(data.message);
+            } catch (error) {
+                console.error('Error:', error);
+                addBotMessage("Sorry, I'm having trouble responding right now. Please try again later.");
+            }
+        }
+
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && chatInput.value.trim()) {
+                const message = chatInput.value.trim();
+                addUserMessage(message);
+                sendMessage(message);
+                chatInput.value = '';
+            }
+        });
+
+        sendMessage.addEventListener('click', () => {
+            if (chatInput.value.trim()) {
+                const message = chatInput.value.trim();
+                addUserMessage(message);
+                sendMessage(message);
+                chatInput.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
