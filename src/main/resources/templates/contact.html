@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: html(content=~{::main})}">
+<body>
+    <main>
+        <!-- Hero Section -->
+        <section class="relative bg-black text-white mb-16">
+            <div class="absolute inset-0 overflow-hidden">
+                <img src="https://images.pexels.com/photos/1454169/pexels-photo-1454169.jpeg" 
+                     alt="Contact Us Hero" 
+                     class="w-full h-full object-cover opacity-50">
+            </div>
+            <div class="relative container mx-auto px-4 py-24">
+                <div class="max-w-3xl">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
+                    <p class="text-xl">We're here to help! Get in touch with us.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="container mx-auto px-4 mb-16">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <!-- Contact Information -->
+                    <div>
+                        <h2 class="text-2xl font-bold mb-8">Get in Touch</h2>
+                        
+                        <!-- Contact Methods -->
+                        <div class="space-y-6 mb-12">
+                            <!-- Email -->
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="font-bold mb-1">Email Us</h3>
+                                    <p class="text-gray-600 mb-1">For general inquiries:</p>
+                                    <a href="mailto:info@henukaimitations.com" class="text-black hover:underline">
+                                        info@henukaimitations.com
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="font-bold mb-1">Call Us</h3>
+                                    <p class="text-gray-600 mb-1">Monday to Saturday, 9am to 6pm:</p>
+                                    <a href="tel:+919876543210" class="text-black hover:underline">
+                                        +91 98765 43210
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Address -->
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="font-bold mb-1">Visit Us</h3>
+                                    <p class="text-gray-600">
+                                        123 Jewelry Lane<br>
+                                        Fashion District<br>
+                                        Mumbai, Maharashtra 400001<br>
+                                        India
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Business Hours -->
+                        <div>
+                            <h3 class="text-xl font-bold mb-4">Business Hours</h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Monday - Friday</span>
+                                    <span>9:00 AM - 6:00 PM</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Saturday</span>
+                                    <span>10:00 AM - 4:00 PM</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Sunday</span>
+                                    <span>Closed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Form -->
+                    <div>
+                        <h2 class="text-2xl font-bold mb-8">Send Us a Message</h2>
+                        
+                        <form class="space-y-6">
+                            <!-- Name -->
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Full Name *
+                                </label>
+                                <input type="text" 
+                                       id="name" 
+                                       name="name" 
+                                       required
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black">
+                            </div>
+
+                            <!-- Email -->
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Email Address *
+                                </label>
+                                <input type="email" 
+                                       id="email" 
+                                       name="email" 
+                                       required
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black">
+                            </div>
+
+                            <!-- Phone -->
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Phone Number
+                                </label>
+                                <input type="tel" 
+                                       id="phone" 
+                                       name="phone"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black">
+                            </div>
+
+                            <!-- Subject -->
+                            <div>
+                                <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Subject *
+                                </label>
+                                <input type="text" 
+                                       id="subject" 
+                                       name="subject" 
+                                       required
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black">
+                            </div>
+
+                            <!-- Message -->
+                            <div>
+                                <label for="message" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Message *
+                                </label>
+                                <textarea id="message" 
+                                          name="message" 
+                                          rows="6" 
+                                          required
+                                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black">
+                                </textarea>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" 
+                                    class="w-full bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition-colors">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- FAQ Section -->
+                <div class="mt-16">
+                    <h2 class="text-2xl font-bold mb-8">Frequently Asked Questions</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- FAQ Item -->
+                        <div>
+                            <h3 class="font-bold mb-2">What are your shipping rates?</h3>
+                            <p class="text-gray-600">
+                                We offer free shipping on orders above ₹500. For orders below ₹500, 
+                                a flat shipping rate of ₹50 applies.
+                            </p>
+                        </div>
+
+                        <!-- FAQ Item -->
+                        <div>
+                            <h3 class="font-bold mb-2">What is your return policy?</h3>
+                            <p class="text-gray-600">
+                                We offer a 7-day return policy for unused items in their original packaging. 
+                                Please contact us to initiate a return.
+                            </p>
+                        </div>
+
+                        <!-- FAQ Item -->
+                        <div>
+                            <h3 class="font-bold mb-2">How can I track my order?</h3>
+                            <p class="text-gray-600">
+                                Once your order is shipped, you'll receive a tracking number via email. 
+                                You can also track your order on our website using your order number.
+                            </p>
+                        </div>
+
+                        <!-- FAQ Item -->
+                        <div>
+                            <h3 class="font-bold mb-2">What payment methods do you accept?</h3>
+                            <p class="text-gray-600">
+                                We accept all major credit cards, UPI, net banking, and cash on delivery.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
