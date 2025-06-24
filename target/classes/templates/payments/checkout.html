@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Payment Checkout - Henuka Imitations</title>
+</head>
+<body>
+    <section class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
+            <h1 class="text-2xl font-bold mb-6">Payment Checkout</h1>
+            
+            <div class="mb-6">
+                <h2 class="text-lg font-semibold mb-2">Order Summary</h2>
+                <div class="border rounded p-4">
+                    <div class="flex justify-between mb-2">
+                        <span>Order Number:</span>
+                        <span th:text="${order.orderNumber}" class="font-medium">ORD-123456</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span>Subtotal:</span>
+                        <span th:text="${#numbers.formatCurrency(order.subtotal)}" class="font-medium">$100.00</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span>Shipping:</span>
+                        <span th:text="${#numbers.formatCurrency(order.shippingCost)}" class="font-medium">$10.00</span>
+                    </div>
+                    <div class="flex justify-between text-lg font-bold mt-2 pt-2 border-t">
+                        <span>Total:</span>
+                        <span th:text="${#numbers.formatCurrency(order.totalAmount)}" class="text-primary">$110.00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h2 class="text-lg font-semibold mb-2">Payment Method</h2>
+                <div class="border rounded p-4">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <img src="https://cdn.razorpay.com/static/assets/logo/payment.svg" alt="Razorpay" class="h-8">
+                        <span class="text-sm text-gray-600">Secure payment powered by Razorpay</span>
+                    </div>
+                    
+                    <button id="rzp-button" 
+                            class="w-full bg-primary text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-dark transition-colors">
+                        Pay Now
+                    </button>
+                </div>
+            </div>
+            
+            <div class="text-sm text-gray-600">
+                <p class="mb-2">By proceeding with the payment, you agree to our terms and conditions.</p>
+                <p>Need help? Contact our support team.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Razorpay SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+    <script th:inline="javascript">
+        document.getElementById('rzp-button').onclick = function(e) {
+            e.preventDefault();
+            
+            fetch('/api/payments/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    orderId: /*[[${order.orderNumber}]]*/ '',
+                    amount: /*[[${order.totalAmount}]]*/ 0
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var options = {
+                    key: /*[[${razorpayKeyId}]]*/ '',
+                    amount: data.amount * 100,
+                    currency: data.currency,
+                    name: 'Henuka Imitations',
+                    description: 'Order #' + /*[[${order.orderNumber}]]*/ '',
+                    order_id: data.orderId,
+                    handler: function (response) {
+                        // Handle payment success
+                        fetch('/api/payments/verify', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_signature: response.razorpay_signature
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                window.location.href = /*[[${successUrl}]]*/ '';
+                            } else {
+                                alert('Payment verification failed: ' + data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Payment verification failed. Please contact support.');
+                        });
+                    },
+                    prefill: {
+                        name: /*[[${order.customerName}]]*/ '',
+                        email: /*[[${order.email}]]*/ '',
+                        contact: /*[[${order.phone}]]*/ ''
+                    },
+                    theme: {
+                        color: '#007bff'
+                    }
+                };
+                
+                var rzp = new Razorpay(options);
+                rzp.open();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to initialize payment. Please try again.');
+            });
+        }
+    </script>
+</body>
+</html>
