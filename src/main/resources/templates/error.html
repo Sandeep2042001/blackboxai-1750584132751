@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: html(content=~{::main})}">
+<body>
+    <main>
+        <div class="container mx-auto px-4 py-16">
+            <div class="max-w-2xl mx-auto text-center">
+                <!-- Error Icon -->
+                <div class="mb-8">
+                    <div th:switch="${status}">
+                        <!-- 404 Not Found -->
+                        <div th:case="404" class="text-8xl text-gray-200 mb-4">
+                            <i class="fas fa-map-signs"></i>
+                        </div>
+                        
+                        <!-- 403 Forbidden -->
+                        <div th:case="403" class="text-8xl text-gray-200 mb-4">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        
+                        <!-- 500 Server Error -->
+                        <div th:case="500" class="text-8xl text-gray-200 mb-4">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        
+                        <!-- Default Error -->
+                        <div th:case="*" class="text-8xl text-gray-200 mb-4">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Status -->
+                <h1 class="text-4xl font-bold mb-4" th:switch="${status}">
+                    <span th:case="404">Page Not Found</span>
+                    <span th:case="403">Access Denied</span>
+                    <span th:case="500">Server Error</span>
+                    <span th:case="*">Oops! Something went wrong</span>
+                </h1>
+
+                <!-- Error Message -->
+                <p class="text-gray-600 mb-8" th:switch="${status}">
+                    <span th:case="404">
+                        The page you're looking for doesn't exist or has been moved.
+                    </span>
+                    <span th:case="403">
+                        You don't have permission to access this page.
+                    </span>
+                    <span th:case="500">
+                        We're experiencing some technical difficulties. Please try again later.
+                    </span>
+                    <span th:case="*" th:text="${error ?: 'An unexpected error occurred.'}">
+                        An unexpected error occurred.
+                    </span>
+                </p>
+
+                <!-- Error Details (for development) -->
+                <div th:if="${@environment.getActiveProfiles().length > 0 and @environment.getActiveProfiles()[0] == 'dev'}"
+                     class="bg-gray-100 p-6 rounded-lg mb-8 text-left">
+                    <h2 class="font-bold mb-2">Error Details:</h2>
+                    <pre class="text-sm text-gray-600 overflow-x-auto" th:text="${trace}">
+                        Stack trace here
+                    </pre>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="/" class="inline-block bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition-colors">
+                        Back to Home
+                    </a>
+                    <button onclick="window.history.back()" 
+                            class="inline-block border border-black text-black px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors">
+                        Go Back
+                    </button>
+                </div>
+
+                <!-- Help Section -->
+                <div class="mt-12 pt-12 border-t border-gray-200">
+                    <h2 class="text-xl font-bold mb-4">Need Help?</h2>
+                    <p class="text-gray-600 mb-6">
+                        If you continue to experience issues, please don't hesitate to contact us.
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <a href="/contact" 
+                           class="inline-flex items-center justify-center text-black hover:text-gray-600">
+                            <i class="fas fa-envelope mr-2"></i>
+                            Contact Support
+                        </a>
+                        <button onclick="openChatbot()" 
+                                class="inline-flex items-center justify-center text-black hover:text-gray-600">
+                            <i class="fas fa-comments mr-2"></i>
+                            Chat with Us
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function openChatbot() {
+                const chatbotButton = document.getElementById('chatbotButton');
+                if (chatbotButton) {
+                    chatbotButton.click();
+                }
+            }
+        </script>
+    </main>
+</body>
+</html>
