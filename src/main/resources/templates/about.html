@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: html(content=~{::main})}">
+<body>
+    <main>
+        <!-- Hero Section -->
+        <section class="relative bg-black text-white mb-16">
+            <div class="absolute inset-0 overflow-hidden">
+                <img src="https://images.pexels.com/photos/1454170/pexels-photo-1454170.jpeg" 
+                     alt="About Us Hero" 
+                     class="w-full h-full object-cover opacity-50">
+            </div>
+            <div class="relative container mx-auto px-4 py-24">
+                <div class="max-w-3xl">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">About Henuka Imitations</h1>
+                    <p class="text-xl">Crafting beautiful imitation jewelry that makes every moment special.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="container mx-auto px-4">
+            <!-- Our Story -->
+            <section class="max-w-4xl mx-auto mb-16">
+                <h2 class="text-3xl font-bold mb-8">Our Story</h2>
+                <div class="prose max-w-none">
+                    <p class="text-gray-600 mb-4">
+                        Founded in 2020, Henuka Imitations began with a simple vision: to make beautiful jewelry accessible 
+                        to everyone. We believe that every person deserves to feel special and confident, regardless of their budget.
+                    </p>
+                    <p class="text-gray-600 mb-4">
+                        Our journey started in a small workshop, where our skilled artisans crafted each piece with dedication 
+                        and attention to detail. Today, we've grown into a trusted name in imitation jewelry, but our commitment 
+                        to quality and craftsmanship remains unchanged.
+                    </p>
+                    <p class="text-gray-600">
+                        We take pride in offering a wide range of designs that blend traditional aesthetics with contemporary 
+                        trends, ensuring there's something for every style and occasion.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Our Values -->
+            <section class="mb-16">
+                <h2 class="text-3xl font-bold mb-8 text-center">Our Values</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Quality -->
+                    <div class="text-center p-6">
+                        <div class="w-16 h-16 bg-black text-white rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-gem text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Quality</h3>
+                        <p class="text-gray-600">
+                            We maintain high standards in our materials and craftsmanship to ensure lasting beauty.
+                        </p>
+                    </div>
+
+                    <!-- Affordability -->
+                    <div class="text-center p-6">
+                        <div class="w-16 h-16 bg-black text-white rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-tags text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Affordability</h3>
+                        <p class="text-gray-600">
+                            Beautiful jewelry shouldn't break the bank. We offer stunning pieces at reasonable prices.
+                        </p>
+                    </div>
+
+                    <!-- Customer Service -->
+                    <div class="text-center p-6">
+                        <div class="w-16 h-16 bg-black text-white rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-heart text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-4">Customer Service</h3>
+                        <p class="text-gray-600">
+                            Your satisfaction is our priority. We're here to help you find the perfect piece.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Why Choose Us -->
+            <section class="bg-gray-50 py-16 -mx-4 mb-16">
+                <div class="container mx-auto px-4">
+                    <h2 class="text-3xl font-bold mb-8 text-center">Why Choose Us</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <!-- Wide Selection -->
+                        <div class="flex items-start">
+                            <i class="fas fa-th text-2xl text-black mt-1 mr-4"></i>
+                            <div>
+                                <h3 class="font-bold mb-2">Wide Selection</h3>
+                                <p class="text-gray-600">
+                                    Extensive collection of designs for every occasion and style preference.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Fast Shipping -->
+                        <div class="flex items-start">
+                            <i class="fas fa-shipping-fast text-2xl text-black mt-1 mr-4"></i>
+                            <div>
+                                <h3 class="font-bold mb-2">Fast Shipping</h3>
+                                <p class="text-gray-600">
+                                    Quick delivery to your doorstep with secure packaging.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Easy Returns -->
+                        <div class="flex items-start">
+                            <i class="fas fa-undo text-2xl text-black mt-1 mr-4"></i>
+                            <div>
+                                <h3 class="font-bold mb-2">Easy Returns</h3>
+                                <p class="text-gray-600">
+                                    Hassle-free 7-day return policy for your peace of mind.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Secure Payments -->
+                        <div class="flex items-start">
+                            <i class="fas fa-lock text-2xl text-black mt-1 mr-4"></i>
+                            <div>
+                                <h3 class="font-bold mb-2">Secure Payments</h3>
+                                <p class="text-gray-600">
+                                    Multiple secure payment options for safe transactions.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact CTA -->
+            <section class="max-w-4xl mx-auto text-center mb-16">
+                <h2 class="text-3xl font-bold mb-4">Get in Touch</h2>
+                <p class="text-gray-600 mb-8">
+                    Have questions or feedback? We'd love to hear from you.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="/contact" 
+                       class="inline-block bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-900 transition-colors">
+                        Contact Us
+                    </a>
+                    <button onclick="openChatbot()" 
+                            class="inline-block border border-black text-black px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors">
+                        Chat with Us
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <script>
+            function openChatbot() {
+                const chatbotButton = document.getElementById('chatbotButton');
+                if (chatbotButton) {
+                    chatbotButton.click();
+                }
+            }
+        </script>
+    </main>
+</body>
+</html>
