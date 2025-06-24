@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Payment Failed - Henuka Imitations</title>
+</head>
+<body>
+    <section class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto text-center">
+            <div class="bg-white rounded-lg shadow-md p-8 mb-6">
+                <div class="mb-6">
+                    <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Payment Failed</h1>
+                    <p class="text-gray-600">We were unable to process your payment.</p>
+                </div>
+
+                <div class="border-t border-b border-gray-200 py-4 mb-6">
+                    <p class="text-gray-600 mb-4">
+                        This could be due to:
+                    </p>
+                    <ul class="text-left text-gray-600 max-w-md mx-auto space-y-2">
+                        <li class="flex items-start">
+                            <span class="mr-2">•</span>
+                            Insufficient funds in your account
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mr-2">•</span>
+                            Incorrect card details
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mr-2">•</span>
+                            Transaction declined by your bank
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="flex flex-col space-y-4">
+                    <a th:href="@{'/payments/checkout/' + ${orderNumber}}" class="inline-block bg-primary text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-dark transition-colors">
+                        Try Payment Again
+                    </a>
+                    <a href="/contact" class="inline-block bg-gray-100 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                        Contact Support
+                    </a>
+                </div>
+            </div>
+
+            <div class="text-sm text-gray-600">
+                <p>Your order is saved. You can try the payment again later from your account dashboard.</p>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
