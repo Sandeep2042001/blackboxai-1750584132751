@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: html(content=~{::main})}">
+<body>
+    <main>
+        <div class="container mx-auto px-4 py-12">
+            <!-- Order Tracking Header -->
+            <div class="max-w-3xl mx-auto">
+                <h1 class="text-3xl font-bold mb-8">Track Your Order</h1>
+
+                <!-- Order Search Form -->
+                <div th:unless="${order}" class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                    <form th:action="@{/orders/track}" method="GET" class="space-y-4">
+                        <div>
+                            <label for="orderNumber" class="block text-sm font-medium text-gray-700 mb-1">
+                                Order Number
+                            </label>
+                            <input type="text" 
+                                   id="orderNumber" 
+                                   name="orderNumber" 
+                                   required
+                                   placeholder="Enter your order number"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black">
+                        </div>
+                        <button type="submit" 
+                                class="w-full bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition-colors">
+                            Track Order
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Order Details -->
+                <div th:if="${order}" class="space-y-8">
+                    <!-- Order Status -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-8">
+                            <div>
+                                <h2 class="text-xl font-bold mb-2">Order Status</h2>
+                                <p class="text-gray-600" th:text="'Order #' + ${order.orderNumber}">Order #12345</p>
+                            </div>
+                            <div th:if="${order.status == 'CANCELLED'}" class="text-red-600">
+                                <i class="fas fa-times-circle text-xl"></i>
+                                <span class="ml-2">Cancelled</span>
+                            </div>
+                        </div>
+
+                        <!-- Status Timeline -->
+                        <div class="relative">
+                            <!-- Progress Bar -->
+                            <div class="h-1 bg-gray-200 absolute top-5 left-0 right-0 z-0">
+                                <div class="h-1 bg-green-500" 
+                                     th:style="${'width: ' + (
+                                        order.status == 'PENDING' ? '25%' :
+                                        order.status == 'CONFIRMED' ? '50%' :
+                                        order.status == 'SHIPPED' ? '75%' :
+                                        order.status == 'DELIVERED' ? '100%' : '0%'
+                                     )}">
+                                </div>
+                            </div>
+
+                            <!-- Status Steps -->
+                            <div class="relative z-10 flex justify-between">
+                                <div class="text-center">
+                                    <div th:class="${'w-10 h-10 mx-auto rounded-full flex items-center justify-center ' + 
+                                                   (order.status != 'CANCELLED' ? 'bg-green-500 text-white' : 'bg-gray-200')}">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium">Order Placed</p>
+                                    <p class="text-xs text-gray-500" 
+                                       th:text="${#temporals.format(order.createdAt, 'MMM dd, yyyy')}">
+                                        Date
+                                    </p>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <div th:class="${'w-10 h-10 mx-auto rounded-full flex items-center justify-center ' + 
+                                                   (order.status == 'CONFIRMED' || order.status == 'SHIPPED' || order.status == 'DELIVERED' ? 
+                                                   'bg-green-500 text-white' : 'bg-gray-200')}">
+                                        <i class="fas fa-clipboard-check"></i>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium">Confirmed</p>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <div th:class="${'w-10 h-10 mx-auto rounded-full flex items-center justify-center ' + 
+                                                   (order.status == 'SHIPPED' || order.status == 'DELIVERED' ? 
+                                                   'bg-green-500 text-white' : 'bg-gray-200')}">
+                                        <i class="fas fa-shipping-fast"></i>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium">Shipped</p>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <div th:class="${'w-10 h-10 mx-auto rounded-full flex items-center justify-center ' + 
+                                                   (order.status == 'DELIVERED' ? 'bg-green-500 text-white' : 'bg-gray-200')}">
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                    <p class="mt-2 text-sm font-medium">Delivered</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cancel Order Button -->
+                        <div th:if="${order.canBeCancelled()}" class="mt-8 text-center">
+                            <form th:action="@{/orders/{id}/cancel(id=${order.id})}" method="POST">
+                                <button type="submit" 
+                                        class="text-red-600 hover:text-red-700"
+                                        onclick="return confirm('Are you sure you want to cancel this order?')">
+                                    Cancel Order
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Order Items -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-xl font-bold mb-6">Order Items</h2>
+                        
+                        <div class="space-y-4">
+                            <div th:each="item : ${order.items}" 
+                                 class="flex items-center py-4 border-b border-gray-200 last:border-0">
+                                <img th:src="${item.product.imageUrl}" 
+                                     th:alt="${item.product.name}"
+                                     class="w-16 h-16 object-cover rounded-lg">
+                                <div class="ml-4 flex-grow">
+                                    <h3 class="font-medium" th:text="${item.product.name}">
+                                        Product Name
+                                    </h3>
+                                    <p class="text-sm text-gray-600" th:text="'Qty: ' + ${item.quantity}">
+                                        Qty: 1
+                                    </p>
+                                </div>
+                                <span class="font-medium" th:text="'₹' + ${item.subtotal}">₹0.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Order Summary -->
+                        <div class="mt-6 pt-6 border-t border-gray-200 space-y-3">
+                            <div class="flex justify-between text-gray-600">
+                                <span>Subtotal</span>
+                                <span th:text="'₹' + ${order.subtotal}">₹0.00</span>
+                            </div>
+                            <div class="flex justify-between text-gray-600">
+                                <span>Shipping</span>
+                                <span th:text="${order.shippingCost.compareTo(new java.math.BigDecimal('0')) == 0 ? 'Free' : '₹' + order.shippingCost}">
+                                    ₹0.00
+                                </span>
+                            </div>
+                            <div class="flex justify-between font-bold pt-3 border-t border-gray-200">
+                                <span>Total</span>
+                                <span th:text="'₹' + ${order.totalAmount}">₹0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Information -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-xl font-bold mb-6">Shipping Information</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="font-medium mb-2">Contact Information</h3>
+                                <p class="text-gray-600" th:text="${order.customerName}">Customer Name</p>
+                                <p class="text-gray-600" th:text="${order.email}">email@example.com</p>
+                                <p class="text-gray-600" th:text="${order.phoneNumber}">+1234567890</p>
+                            </div>
+                            <div>
+                                <h3 class="font-medium mb-2">Delivery Address</h3>
+                                <p class="text-gray-600 whitespace-pre-line" th:text="${order.shippingAddress}">
+                                    Shipping Address
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Need Help -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-xl font-bold mb-4">Need Help?</h2>
+                        <p class="text-gray-600 mb-4">
+                            If you have any questions about your order, please don't hesitate to contact us.
+                        </p>
+                        <div class="flex space-x-4">
+                            <a href="/contact" 
+                               class="inline-flex items-center text-black hover:text-gray-600">
+                                <i class="fas fa-envelope mr-2"></i>
+                                Contact Support
+                            </a>
+                            <button onclick="openChatbot()" 
+                                    class="inline-flex items-center text-black hover:text-gray-600">
+                                <i class="fas fa-comments mr-2"></i>
+                                Chat with Us
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function openChatbot() {
+                // Trigger chatbot open (defined in main layout)
+                const chatbotButton = document.getElementById('chatbotButton');
+                if (chatbotButton) {
+                    chatbotButton.click();
+                }
+            }
+        </script>
+    </main>
+</body>
+</html>
