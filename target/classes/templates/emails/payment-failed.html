@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{emails/layout :: html(title='Payment Failed', ~{::content})}">
+<body>
+    <th:block th:fragment="content">
+        <p>Dear <span th:text="${order.customerName}">Customer</span>,</p>
+        
+        <p>We regret to inform you that your payment for order <strong th:text="${order.orderNumber}">ORD-123456</strong> has failed.</p>
+        
+        <div class="order-details" style="background-color: #fff3cd; border: 1px solid #ffeeba;">
+            <h3>Payment Details</h3>
+            <p>Order Number: <strong th:text="${order.orderNumber}">ORD-123456</strong></p>
+            <p>Amount: <strong th:text="${#numbers.formatCurrency(payment.amount)}">$100.00</strong></p>
+            <p>Error: <strong th:text="${payment.errorDescription}">Payment declined</strong></p>
+            <p>Date: <strong th:text="${#temporals.format(payment.updatedAt, 'dd MMM yyyy HH:mm')}">01 Jan 2024 12:00</strong></p>
+        </div>
+        
+        <h3>What to do next?</h3>
+        <ul>
+            <li>Check if your payment method has sufficient funds</li>
+            <li>Verify your card details are correct</li>
+            <li>Try using a different payment method</li>
+        </ul>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <a th:href="@{${baseUrl} + '/orders/checkout?number=' + ${order.orderNumber}}" 
+               class="button" style="background-color: #28a745;">Try Payment Again</a>
+        </div>
+        
+        <p style="margin-top: 20px;">
+            If you continue to experience issues, please contact our customer service team for assistance.
+            We're here to help ensure a smooth shopping experience.
+        </p>
+        
+        <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+            <h4>Order Summary</h4>
+            <div th:each="item : ${order.items}" style="margin-bottom: 10px;">
+                <p>
+                    <span th:text="${item.product.name}">Product Name</span> x 
+                    <span th:text="${item.quantity}">1</span> - 
+                    <span th:text="${#numbers.formatCurrency(item.subtotal)}">$100.00</span>
+                </p>
+            </div>
+            <div style="margin-top: 10px; border-top: 1px solid #dee2e6; padding-top: 10px;">
+                <p>Subtotal: <strong th:text="${#numbers.formatCurrency(order.subtotal)}">$100.00</strong></p>
+                <p>Shipping: <strong th:text="${#numbers.formatCurrency(order.shippingCost)}">$10.00</strong></p>
+                <p>Total: <strong th:text="${#numbers.formatCurrency(order.totalAmount)}">$110.00</strong></p>
+            </div>
+        </div>
+        
+        <p>Best regards,<br>Henuka Imitations Team</p>
+    </th:block>
+</body>
+</html>
