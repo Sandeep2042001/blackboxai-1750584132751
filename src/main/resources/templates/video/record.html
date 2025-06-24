@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: html(content=~{::main})}">
+<body>
+    <main class="container mx-auto px-4 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold mb-2">Record Video</h1>
+            <p class="text-gray-600">Record a video using your device's camera</p>
+        </div>
+
+        <!-- Video Recording Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Live Video Feed -->
+            <div class="space-y-4">
+                <div class="relative bg-black rounded-lg overflow-hidden aspect-video">
+                    <video id="liveVideo" 
+                           class="w-full h-full object-cover" 
+                           autoplay 
+                           muted 
+                           playsinline>
+                    </video>
+                    
+                    <!-- Recording Indicator -->
+                    <div id="recordingIndicator" 
+                         class="hidden absolute top-4 right-4 flex items-center space-x-2 bg-red-500 text-white px-3 py-1 rounded-full">
+                        <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                        <span class="text-sm font-medium">Recording</span>
+                    </div>
+                    
+                    <!-- Timer -->
+                    <div id="timer" 
+                         class="hidden absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm font-medium">
+                        00:00
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="flex justify-center space-x-4">
+                    <button id="startBtn" 
+                            class="flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition-colors">
+                        <span>Start Recording</span>
+                    </button>
+                    
+                    <button id="pauseBtn" 
+                            class="hidden flex items-center space-x-2 bg-yellow-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600 transition-colors">
+                        <span>Pause</span>
+                    </button>
+                    
+                    <button id="resumeBtn" 
+                            class="hidden flex items-center space-x-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors">
+                        <span>Resume</span>
+                    </button>
+                    
+                    <button id="stopBtn" 
+                            class="hidden flex items-center space-x-2 bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition-colors">
+                        <span>Stop</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            <div id="previewSection" class="hidden space-y-4">
+                <h2 class="text-2xl font-bold">Preview</h2>
+                <div class="bg-black rounded-lg overflow-hidden aspect-video">
+                    <video id="recordedVideo" 
+                           class="w-full h-full object-cover" 
+                           controls>
+                    </video>
+                </div>
+                <div class="flex justify-center">
+                    <a id="downloadLink" 
+                       class="inline-block bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition-colors"
+                       download="recorded-video.webm">
+                        Download Video
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" 
+             class="hidden mt-6 p-4 bg-red-100 text-red-700 rounded-lg">
+        </div>
+    </main>
+
+    <!-- Video Recording JavaScript -->
+    <script th:inline="javascript">
+        let mediaRecorder;
+        let recordedChunks = [];
+        let startTime;
+        let timerInterval;
+
+        // DOM Elements
+        const liveVideo = document.getElementById('liveVideo');
+        const recordedVideo = document.getElementById('recordedVideo');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resumeBtn = document.getElementById('resumeBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const timerDisplay = document.getElementById('timer');
+        const recordingIndicator = document.getElementById('recordingIndicator');
+        const previewSection = document.getElementById('previewSection');
+        const downloadLink = document.getElementById('downloadLink');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Update recording timer
+        function updateTimer() {
+            const diff = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = String(Math.floor(diff / 60)).padStart(2, '0');
+            const seconds = String(diff % 60).padStart(2, '0');
+            timerDisplay.textContent = `${minutes}:${seconds}`;
+        }
+
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+        // Initialize camera
+        async function initCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: true, 
+                    audio: true 
+                });
+                liveVideo.srcObject = stream;
+                startBtn.disabled = false;
+            } catch (error) {
+                showError('Error accessing camera/microphone: ' + error.message);
+                console.error('getUserMedia error:', error);
+            }
+        }
+
+        // Start Recording
+        startBtn.addEventListener('click', () => {
+            const stream = liveVideo.srcObject;
+            if (!stream) {
+                showError('No media stream available. Please allow camera/microphone access.');
+                return;
+            }
+
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstart = () => {
+                startTime = Date.now();
+                timerInterval = setInterval(updateTimer, 1000);
+                startBtn.classList.add('hidden');
+                pauseBtn.classList.remove('hidden');
+                stopBtn.classList.remove('hidden');
+                timerDisplay.classList.remove('hidden');
+                recordingIndicator.classList.remove('hidden');
+                previewSection.classList.add('hidden');
+                errorMessage.classList.add('hidden');
+            };
+
+            mediaRecorder.onstop = () => {
+                clearInterval(timerInterval);
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                recordedVideo.src = URL.createObjectURL(blob);
+                downloadLink.href = recordedVideo.src;
+                
+                // Reset UI
+                startBtn.classList.remove('hidden');
+                pauseBtn.classList.add('hidden');
+                resumeBtn.classList.add('hidden');
+                stopBtn.classList.add('hidden');
+                timerDisplay.classList.add('hidden');
+                recordingIndicator.classList.add('hidden');
+                previewSection.classList.remove('hidden');
+            };
+
+            mediaRecorder.start();
+        });
+
+        // Pause Recording
+        pauseBtn.addEventListener('click', () => {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.pause();
+                pauseBtn.classList.add('hidden');
+                resumeBtn.classList.remove('hidden');
+                recordingIndicator.classList.add('hidden');
+            }
+        });
+
+        // Resume Recording
+        resumeBtn.addEventListener('click', () => {
+            if (mediaRecorder && mediaRecorder.state === "paused") {
+                mediaRecorder.resume();
+                resumeBtn.classList.add('hidden');
+                pauseBtn.classList.remove('hidden');
+                recordingIndicator.classList.remove('hidden');
+            }
+        });
+
+        // Stop Recording
+        stopBtn.addEventListener('click', () => {
+            if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) {
+                mediaRecorder.stop();
+            }
+        });
+
+        // Initialize camera when page loads
+        window.addEventListener('load', initCamera);
+    </script>
+</body>
+</html>
