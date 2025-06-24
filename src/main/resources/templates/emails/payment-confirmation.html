@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{emails/layout :: html(title='Payment Confirmation', ~{::content})}">
+<body>
+    <th:block th:fragment="content">
+        <p>Dear <span th:text="${order.customerName}">Customer</span>,</p>
+        
+        <p>Thank you for your payment. Your order has been confirmed and is being processed.</p>
+        
+        <div class="order-details">
+            <h3>Order Details</h3>
+            <p>Order Number: <strong th:text="${order.orderNumber}">ORD-123456</strong></p>
+            <p>Payment ID: <strong th:text="${payment.paymentId}">PAY-123456</strong></p>
+            <p>Amount Paid: <strong th:text="${#numbers.formatCurrency(payment.amount)}">$100.00</strong></p>
+            <p>Payment Date: <strong th:text="${#temporals.format(payment.updatedAt, 'dd MMM yyyy HH:mm')}">01 Jan 2024 12:00</strong></p>
+        </div>
+        
+        <h3>Order Summary</h3>
+        <div th:each="item : ${order.items}" style="margin-bottom: 10px;">
+            <p>
+                <span th:text="${item.product.name}">Product Name</span> x 
+                <span th:text="${item.quantity}">1</span> - 
+                <span th:text="${#numbers.formatCurrency(item.subtotal)}">$100.00</span>
+            </p>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <p>Subtotal: <strong th:text="${#numbers.formatCurrency(order.subtotal)}">$100.00</strong></p>
+            <p>Shipping: <strong th:text="${#numbers.formatCurrency(order.shippingCost)}">$10.00</strong></p>
+            <p>Total: <strong th:text="${#numbers.formatCurrency(order.totalAmount)}">$110.00</strong></p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <a th:href="@{${baseUrl} + '/orders/track?number=' + ${order.orderNumber}}" 
+               class="button">Track Your Order</a>
+        </div>
+        
+        <p style="margin-top: 20px;">
+            If you have any questions about your order, please don't hesitate to contact our customer service team.
+        </p>
+        
+        <p>Best regards,<br>Henuka Imitations Team</p>
+    </th:block>
+</body>
+</html>
