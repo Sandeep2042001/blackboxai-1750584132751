@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{emails/layout :: html(title='Refund Confirmation', ~{::content})}">
+<body>
+    <th:block th:fragment="content">
+        <p>Dear <span th:text="${order.customerName}">Customer</span>,</p>
+        
+        <p>We confirm that your refund for order <strong th:text="${order.orderNumber}">ORD-123456</strong> has been processed successfully.</p>
+        
+        <div class="order-details" style="background-color: #d4edda; border: 1px solid #c3e6cb;">
+            <h3>Refund Details</h3>
+            <p>Order Number: <strong th:text="${order.orderNumber}">ORD-123456</strong></p>
+            <p>Refund Amount: <strong th:text="${#numbers.formatCurrency(payment.amount)}">$100.00</strong></p>
+            <p>Refund ID: <strong th:text="${payment.refundId}">REF-123456</strong></p>
+            <p>Date: <strong th:text="${#temporals.format(payment.updatedAt, 'dd MMM yyyy HH:mm')}">01 Jan 2024 12:00</strong></p>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+            <h4>Original Order Details</h4>
+            <div th:each="item : ${order.items}" style="margin-bottom: 10px;">
+                <p>
+                    <span th:text="${item.product.name}">Product Name</span> x 
+                    <span th:text="${item.quantity}">1</span> - 
+                    <span th:text="${#numbers.formatCurrency(item.subtotal)}">$100.00</span>
+                </p>
+            </div>
+            <div style="margin-top: 10px; border-top: 1px solid #dee2e6; padding-top: 10px;">
+                <p>Subtotal: <strong th:text="${#numbers.formatCurrency(order.subtotal)}">$100.00</strong></p>
+                <p>Shipping: <strong th:text="${#numbers.formatCurrency(order.shippingCost)}">$10.00</strong></p>
+                <p>Total Refunded: <strong th:text="${#numbers.formatCurrency(order.totalAmount)}">$110.00</strong></p>
+            </div>
+        </div>
+        
+        <p style="margin-top: 20px;">
+            The refund has been initiated to your original payment method. Please note that it may take 5-10 business days 
+            for the refund to appear in your account, depending on your bank's processing time.
+        </p>
+        
+        <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+            <h4>Important Information</h4>
+            <ul>
+                <li>Your refund will be processed to the original payment method used for the purchase</li>
+                <li>Processing time varies by payment method and financial institution</li>
+                <li>You will receive a notification once the refund has been credited to your account</li>
+            </ul>
+        </div>
+        
+        <p style="margin-top: 20px;">
+            If you have any questions about your refund, please don't hesitate to contact our customer service team.
+            We appreciate your business and hope to serve you again in the future.
+        </p>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <a th:href="@{${baseUrl} + '/products'}" 
+               class="button" style="background-color: #28a745;">Continue Shopping</a>
+        </div>
+        
+        <p>Best regards,<br>Henuka Imitations Team</p>
+    </th:block>
+</body>
+</html>
