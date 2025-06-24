@@ -94,6 +94,33 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    public Order confirmOrder(String orderId) {
+        Order order = getOrderByNumber(orderId);
+        order.setStatus(Order.OrderStatus.CONFIRMED);
+        order.setPaymentStatus(Order.PaymentStatus.PAID);
+        return orderRepository.save(order);
+    }
+
+    public Order failOrder(String orderId) {
+        Order order = getOrderByNumber(orderId);
+        order.setStatus(Order.OrderStatus.PENDING);
+        order.setPaymentStatus(Order.PaymentStatus.FAILED);
+        return orderRepository.save(order);
+    }
+
+    public Order refundOrder(String orderId) {
+        Order order = getOrderByNumber(orderId);
+        order.setStatus(Order.OrderStatus.CANCELLED);
+        order.setPaymentStatus(Order.PaymentStatus.REFUNDED);
+        
+        // Restore product stock
+        order.getItems().forEach(item -> 
+            productService.increaseStock(item.getProduct().getId(), item.getQuantity())
+        );
+        
+        return orderRepository.save(order);
+    }
+
     public Order updatePaymentStatus(Long orderId, Order.PaymentStatus newStatus) {
         Order order = getOrderById(orderId);
         order.setPaymentStatus(newStatus);
